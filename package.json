@@ -1,0 +1,30 @@
+{
+  "name": "cloudflare-worker-auth-system",
+  "version": "1.0.0",
+  "description": "نظام تسجيل دخول ومستخدمين باستخدام Cloudflare Workers و Hono",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "tsc"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "hono",
+    "authentication",
+    "d1-database",
+    "bcrypt"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.6.3",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@cloudflare/workers-types": "^4.20241024.0",
+    "typescript": "^5.6.2",
+    "wrangler": "^3.80.2"
+  }
+}
