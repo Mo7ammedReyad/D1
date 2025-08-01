@@ -18,7 +18,7 @@ const htmlTemplate = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الدردشة</title>
+    <title>نظام المحادثات</title>
     <style>
         * {
             margin: 0;
@@ -30,6 +30,9 @@ const htmlTemplate = `
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
         }
         
@@ -40,21 +43,7 @@ const htmlTemplate = `
             overflow: hidden;
             width: 100%;
             max-width: 400px;
-            margin: 0 auto;
             position: relative;
-        }
-        
-        .chat-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
         }
         
         .form-container {
@@ -79,7 +68,7 @@ const htmlTemplate = `
             font-weight: 500;
         }
         
-        input {
+        input, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -87,9 +76,10 @@ const htmlTemplate = `
             font-size: 16px;
             transition: all 0.3s;
             background: #fafafa;
+            font-family: inherit;
         }
         
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
             background: white;
@@ -150,131 +140,116 @@ const htmlTemplate = `
             border: 1px solid #f5c6cb;
         }
         
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 10px;
-            color: #667eea;
+        /* Chat Styles */
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
-        /* Chat Styles */
-        .chat-header {
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-left: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-info {
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+        }
+        
+        .user-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .user-id {
+            font-size: 14px;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .new-chat {
             padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .new-chat input {
+            margin-bottom: 10px;
+        }
+        
+        .new-chat button {
+            background: #28a745;
+            font-size: 16px;
+            padding: 10px;
+        }
+        
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .conversation-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .conversation-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .conversation-item.active {
+            background: #e8eaf6;
+            border-color: #667eea;
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-id {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-        
-        .logout-btn {
-            background: #dc3545;
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .chat-main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        .chat-sidebar {
-            width: 300px;
-            border-left: 1px solid #e0e0e0;
-            background: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .search-container {
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-        }
-        
-        .conversations {
+        .messages-container {
             flex: 1;
             overflow-y: auto;
-        }
-        
-        .conversation-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .conversation-item:hover {
-            background: #e9ecef;
-        }
-        
-        .conversation-item.active {
-            background: #667eea;
-            color: white;
-        }
-        
-        .conversation-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .conversation-preview {
-            font-size: 12px;
-            color: #666;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .conversation-item.active .conversation-preview {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .chat-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-messages {
-            flex: 1;
             padding: 20px;
-            overflow-y: auto;
-            background: #f8f9fa;
+            background: #fafafa;
         }
         
         .message-item {
             margin-bottom: 15px;
             display: flex;
-            align-items: flex-start;
+            align-items: flex-end;
         }
         
         .message-item.sent {
+            justify-content: flex-start;
             flex-direction: row-reverse;
         }
         
@@ -282,126 +257,94 @@ const htmlTemplate = `
             max-width: 70%;
             padding: 12px 18px;
             border-radius: 18px;
-            word-wrap: break-word;
+            position: relative;
         }
         
         .message-item.received .message-bubble {
             background: white;
-            color: #333;
-            border-bottom-right-radius: 4px;
+            border: 1px solid #e0e0e0;
+            margin-right: 10px;
         }
         
         .message-item.sent .message-bubble {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-bottom-left-radius: 4px;
+            margin-left: 10px;
         }
         
         .message-time {
-            font-size: 11px;
+            font-size: 12px;
             color: #999;
-            margin: 5px 10px 0;
+            margin-top: 5px;
+        }
+        
+        .message-item.sent .message-time {
+            color: rgba(255,255,255,0.8);
+            text-align: left;
         }
         
         .message-input-container {
             padding: 20px;
-            border-top: 1px solid #e0e0e0;
             background: white;
-        }
-        
-        .message-input-form {
+            border-top: 1px solid #e0e0e0;
             display: flex;
             gap: 10px;
-            align-items: center;
         }
         
         .message-input {
             flex: 1;
-            padding: 12px 18px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-            resize: none;
-            outline: none;
         }
         
-        .send-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
+        .send-button {
+            width: auto;
+            padding: 12px 30px;
+            margin: 0;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            padding: 8px 20px;
+            font-size: 14px;
+            width: auto;
+            margin-top: 15px;
         }
         
         .empty-chat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #666;
             text-align: center;
+            color: #999;
+            padding: 40px;
         }
         
-        .empty-chat h3 {
-            margin-bottom: 10px;
-            color: #333;
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            color: #667eea;
         }
         
         @media (max-width: 768px) {
-            .chat-main {
-                flex-direction: column;
-            }
-            
-            .chat-sidebar {
-                width: 100%;
-                height: 300px;
-            }
-            
             .chat-container {
+                flex-direction: column;
                 height: 100vh;
+                max-width: 100%;
                 border-radius: 0;
-                margin: 0;
             }
             
-            body {
-                padding: 0;
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-left: none;
+                border-bottom: 1px solid #e0e0e0;
             }
-        }
-        
-        .search-results {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            margin-top: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .search-result-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .search-result-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .search-result-item:last-child {
-            border-bottom: none;
+            
+            .chat-area {
+                height: calc(100vh - 300px);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Forms -->
-    <div id="authContainer" class="container">
+    <div class="container" id="authContainer">
         <div id="authForms">
             <!-- Login Form -->
             <div id="loginForm" class="form-container">
@@ -448,45 +391,43 @@ const htmlTemplate = `
     </div>
     
     <!-- Chat Interface -->
-    <div id="chatContainer" class="chat-container" style="display: none;">
-        <div class="chat-header">
+    <div class="chat-container" id="chatContainer" style="display: none;">
+        <div class="sidebar">
             <div class="user-info">
-                <div>
-                    <div>مرحباً، <span id="userEmail"></span></div>
-                    <div class="user-id">رقمك: <span id="userId"></span></div>
-                </div>
-            </div>
-            <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
-        </div>
-        
-        <div class="chat-main">
-            <div class="chat-sidebar">
-                <div class="search-container">
-                    <input type="text" class="search-input" id="searchInput" placeholder="ابحث برقم المستخدم..." onkeyup="searchUsers()">
-                    <div id="searchResults" class="search-results" style="display: none;"></div>
-                </div>
-                <div class="conversations" id="conversationsList">
-                    <!-- Conversations will be loaded here -->
-                </div>
+                <h3>مرحباً</h3>
+                <div id="currentUserEmail"></div>
+                <div class="user-id">رقمك: <span id="currentUserId"></span></div>
+                <button class="logout-btn" onclick="logout()">تسجيل خروج</button>
             </div>
             
-            <div class="chat-content">
-                <div id="emptyChat" class="empty-chat">
-                    <h3>مرحباً بك في نظام الدردشة</h3>
-                    <p>اختر محادثة من القائمة أو ابحث عن مستخدم جديد</p>
+            <div class="new-chat">
+                <h4>محادثة جديدة</h4>
+                <input type="text" id="newChatUserId" placeholder="أدخل رقم المستخدم">
+                <button onclick="startNewChat()">بدء محادثة</button>
+            </div>
+            
+            <div class="conversations-list" id="conversationsList">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="chat-area">
+            <div id="emptyChatState" class="empty-chat">
+                <h3>اختر محادثة أو ابدأ محادثة جديدة</h3>
+            </div>
+            
+            <div id="activeChatArea" style="display: none;">
+                <div class="chat-header">
+                    <h3 id="chatWithUser">المحادثة مع...</h3>
                 </div>
                 
-                <div id="chatArea" style="display: none;">
-                    <div class="chat-messages" id="messagesContainer">
-                        <!-- Messages will be loaded here -->
-                    </div>
-                    
-                    <div class="message-input-container">
-                        <form class="message-input-form" onsubmit="sendMessage(event)">
-                            <textarea class="message-input" id="messageInput" placeholder="اكتب رسالتك..." rows="1" onkeypress="handleEnterKey(event)"></textarea>
-                            <button type="submit" class="send-btn">➤</button>
-                        </form>
-                    </div>
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be loaded here -->
+                </div>
+                
+                <div class="message-input-container">
+                    <input type="text" class="message-input" id="messageInput" placeholder="اكتب رسالتك..." onkeypress="handleMessageKeyPress(event)">
+                    <button class="send-button" onclick="sendMessage()">إرسال</button>
                 </div>
             </div>
         </div>
@@ -494,8 +435,8 @@ const htmlTemplate = `
     
     <script>
         let currentUser = null;
-        let currentConversation = null;
-        let messagesPolling = null;
+        let activeConversation = null;
+        let pollInterval = null;
         
         // Check if user is logged in
         const savedUser = localStorage.getItem('currentUser');
@@ -578,10 +519,10 @@ const htmlTemplate = `
                 loadingDiv.style.display = 'none';
                 
                 if (data.success) {
-                    messageDiv.innerHTML = '<div class="message success">تم إنشاء الحساب بنجاح!</div>';
+                    messageDiv.innerHTML = '<div class="message success">تم إنشاء الحساب بنجاح! رقمك هو: ' + data.user.id + '</div>';
                     currentUser = data.user;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    setTimeout(() => showChatInterface(), 1000);
+                    setTimeout(() => showChatInterface(), 2000);
                 } else {
                     messageDiv.innerHTML = '<div class="message error">' + data.message + '</div>';
                 }
@@ -594,27 +535,175 @@ const htmlTemplate = `
         function showChatInterface() {
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'flex';
-            document.getElementById('userEmail').textContent = currentUser.email;
-            document.getElementById('userId').textContent = currentUser.user_id;
+            document.getElementById('currentUserEmail').textContent = currentUser.email;
+            document.getElementById('currentUserId').textContent = currentUser.id;
             
             loadConversations();
-            startMessagesPolling();
+            // Poll for new messages every 3 seconds
+            pollInterval = setInterval(pollMessages, 3000);
+        }
+        
+        async function loadConversations() {
+            try {
+                const response = await fetch('/conversations?userId=' + currentUser.id);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const conversationsList = document.getElementById('conversationsList');
+                    conversationsList.innerHTML = '';
+                    
+                    data.conversations.forEach(conv => {
+                        const div = document.createElement('div');
+                        div.className = 'conversation-item';
+                        div.onclick = () => selectConversation(conv);
+                        div.innerHTML = \`
+                            <strong>محادثة مع: \${conv.otherUserEmail}</strong>
+                            <div style="font-size: 14px; color: #666;">رقم المستخدم: \${conv.otherUserId}</div>
+                        \`;
+                        conversationsList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+            }
+        }
+        
+        async function startNewChat() {
+            const recipientId = document.getElementById('newChatUserId').value;
+            if (!recipientId) {
+                alert('الرجاء إدخال رقم المستخدم');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/user/' + recipientId);
+                const data = await response.json();
+                
+                if (data.success) {
+                    selectConversation({
+                        otherUserId: parseInt(recipientId),
+                        otherUserEmail: data.user.email
+                    });
+                    document.getElementById('newChatUserId').value = '';
+                    loadConversations();
+                } else {
+                    alert('لم يتم العثور على المستخدم');
+                }
+            } catch (error) {
+                alert('حدث خطأ في البحث عن المستخدم');
+            }
+        }
+        
+        function selectConversation(conversation) {
+            activeConversation = conversation;
+            document.getElementById('emptyChatState').style.display = 'none';
+            document.getElementById('activeChatArea').style.display = 'flex';
+            document.getElementById('chatWithUser').textContent = 'المحادثة مع ' + conversation.otherUserEmail;
+            
+            // Update active state in sidebar
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget?.classList.add('active');
+            
+            loadMessages();
+        }
+        
+        async function loadMessages() {
+            if (!activeConversation) return;
+            
+            try {
+                const response = await fetch(\`/messages?senderId=\${currentUser.id}&recipientId=\${activeConversation.otherUserId}\`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const messagesContainer = document.getElementById('messagesContainer');
+                    messagesContainer.innerHTML = '';
+                    
+                    data.messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message-item ' + (msg.sender_id === currentUser.id ? 'sent' : 'received');
+                        
+                        const time = new Date(msg.created_at).toLocaleTimeString('ar-EG', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        messageDiv.innerHTML = \`
+                            <div class="message-bubble">
+                                <div>\${msg.content}</div>
+                                <div class="message-time">\${time}</div>
+                            </div>
+                        \`;
+                        
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+        
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content || !activeConversation) return;
+            
+            try {
+                const response = await fetch('/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        senderId: currentUser.id,
+                        recipientId: activeConversation.otherUserId,
+                        content: content
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    messageInput.value = '';
+                    loadMessages();
+                } else {
+                    alert('فشل إرسال الرسالة');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('حدث خطأ في إرسال الرسالة');
+            }
+        }
+        
+        function handleMessageKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        async function pollMessages() {
+            if (activeConversation) {
+                await loadMessages();
+            }
         }
         
         function logout() {
             localStorage.removeItem('currentUser');
             currentUser = null;
-            currentConversation = null;
+            activeConversation = null;
             
-            if (messagesPolling) {
-                clearInterval(messagesPolling);
-                messagesPolling = null;
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
             }
             
-            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('authContainer').style.display = 'flex';
             document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('signupForm').style.display = 'none';
             
             // Clear form fields
             document.getElementById('loginEmail').value = '';
@@ -626,260 +715,42 @@ const htmlTemplate = `
             document.getElementById('loginMessage').innerHTML = '';
             document.getElementById('signupMessage').innerHTML = '';
         }
-        
-        async function loadConversations() {
-            try {
-                const response = await fetch('/conversations', {
-                    headers: {
-                        'X-User-ID': currentUser.id.toString()
-                    }
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    displayConversations(data.conversations);
-                }
-            } catch (error) {
-                console.error('Error loading conversations:', error);
-            }
-        }
-        
-        function displayConversations(conversations) {
-            const container = document.getElementById('conversationsList');
-            container.innerHTML = '';
-            
-            conversations.forEach(conv => {
-                const item = document.createElement('div');
-                item.className = 'conversation-item';
-                item.onclick = () => openConversation(conv.other_user_id, conv.other_user_email);
-                
-                item.innerHTML = \`
-                    <div class="conversation-name">\${conv.other_user_email}</div>
-                    <div class="conversation-preview">رقم المستخدم: \${conv.other_user_id}</div>
-                \`;
-                
-                container.appendChild(item);
-            });
-        }
-        
-        async function searchUsers() {
-            const query = document.getElementById('searchInput').value.trim();
-            const resultsContainer = document.getElementById('searchResults');
-            
-            if (query.length < 1) {
-                resultsContainer.style.display = 'none';
-                return;
-            }
-            
-            try {
-                const response = await fetch(\`/search-users?q=\${encodeURIComponent(query)}\`, {
-                    headers: {
-                        'X-User-ID': currentUser.id.toString()
-                    }
-                });
-                const data = await response.json();
-                
-                if (data.success && data.users.length > 0) {
-                    displaySearchResults(data.users);
-                } else {
-                    resultsContainer.innerHTML = '<div class="search-result-item">لا توجد نتائج</div>';
-                    resultsContainer.style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error searching users:', error);
-            }
-        }
-        
-        function displaySearchResults(users) {
-            const container = document.getElementById('searchResults');
-            container.innerHTML = '';
-            
-            users.forEach(user => {
-                const item = document.createElement('div');
-                item.className = 'search-result-item';
-                item.onclick = () => {
-                    openConversation(user.user_id, user.email);
-                    container.style.display = 'none';
-                    document.getElementById('searchInput').value = '';
-                };
-                
-                item.innerHTML = \`
-                    <div>\${user.email}</div>
-                    <div style="font-size: 12px; color: #666;">رقم: \${user.user_id}</div>
-                \`;
-                
-                container.appendChild(item);
-            });
-            
-            container.style.display = 'block';
-        }
-        
-        async function openConversation(otherUserId, otherUserEmail) {
-            currentConversation = { otherUserId, otherUserEmail };
-            
-            // Update UI
-            document.getElementById('emptyChat').style.display = 'none';
-            document.getElementById('chatArea').style.display = 'flex';
-            
-            // Highlight selected conversation
-            const conversationItems = document.querySelectorAll('.conversation-item');
-            conversationItems.forEach(item => item.classList.remove('active'));
-            
-            // Load messages
-            await loadMessages();
-        }
-        
-        async function loadMessages() {
-            if (!currentConversation) return;
-            
-            try {
-                const response = await fetch(\`/messages?other_user_id=\${currentConversation.otherUserId}\`, {
-                    headers: {
-                        'X-User-ID': currentUser.id.toString()
-                    }
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    displayMessages(data.messages);
-                }
-            } catch (error) {
-                console.error('Error loading messages:', error);
-            }
-        }
-        
-        function displayMessages(messages) {
-            const container = document.getElementById('messagesContainer');
-            container.innerHTML = '';
-            
-            messages.forEach(message => {
-                const messageItem = document.createElement('div');
-                messageItem.className = \`message-item \${message.sender_id === currentUser.id ? 'sent' : 'received'}\`;
-                
-                const time = new Date(message.created_at).toLocaleTimeString('ar-SA', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                messageItem.innerHTML = \`
-                    <div class="message-bubble">\${message.content}</div>
-                    <div class="message-time">\${time}</div>
-                \`;
-                
-                container.appendChild(messageItem);
-            });
-            
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
-        }
-        
-        async function sendMessage(event) {
-            event.preventDefault();
-            
-            if (!currentConversation) return;
-            
-            const messageInput = document.getElementById('messageInput');
-            const content = messageInput.value.trim();
-            
-            if (!content) return;
-            
-            try {
-                const response = await fetch('/send-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-User-ID': currentUser.id.toString()
-                    },
-                    body: JSON.stringify({
-                        receiver_id: currentConversation.otherUserId,
-                        content: content
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    messageInput.value = '';
-                    await loadMessages();
-                    await loadConversations();
-                }
-            } catch (error) {
-                console.error('Error sending message:', error);
-            }
-        }
-        
-        function handleEnterKey(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage(event);
-            }
-        }
-        
-        function startMessagesPolling() {
-            if (messagesPolling) {
-                clearInterval(messagesPolling);
-            }
-            
-            messagesPolling = setInterval(async () => {
-                if (currentConversation) {
-                    await loadMessages();
-                }
-                await loadConversations();
-            }, 3000); // Poll every 3 seconds
-        }
-        
-        // Hide search results when clicking outside
-        document.addEventListener('click', function(event) {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-            
-            if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
-                searchResults.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>
 `;
 
-// Generate unique user ID
-function generateUserId(): string {
-  return Math.floor(10000000 + Math.random() * 90000000).toString();
-}
-
 // Initialize database
 async function initDB(db: D1Database) {
   try {
-    // Users table with user_id
+    // Create users table
     await db.prepare(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `).run();
-
-    // Messages table
+    
+    // Create messages table
     await db.prepare(`
       CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         sender_id INTEGER NOT NULL,
-        receiver_id INTEGER NOT NULL,
+        recipient_id INTEGER NOT NULL,
         content TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (sender_id) REFERENCES users (id),
-        FOREIGN KEY (receiver_id) REFERENCES users (id)
+        FOREIGN KEY (recipient_id) REFERENCES users (id)
       )
     `).run();
-
-    // Index for faster message queries
+    
+    // Create index for faster message queries
     await db.prepare(`
       CREATE INDEX IF NOT EXISTS idx_messages_users 
-      ON messages (sender_id, receiver_id, created_at)
+      ON messages (sender_id, recipient_id)
     `).run();
-
   } catch (error) {
     console.error('Error initializing database:', error);
   }
@@ -915,33 +786,18 @@ app.post('/signup', async (c) => {
       return c.json({ success: false, message: 'هذا البريد الإلكتروني مسجل بالفعل' });
     }
     
-    // Generate unique user ID
-    let userId: string;
-    let isUnique = false;
-    
-    while (!isUnique) {
-      userId = generateUserId();
-      const existingId = await c.env.DB.prepare(
-        'SELECT id FROM users WHERE user_id = ?'
-      ).bind(userId).first();
-      
-      if (!existingId) {
-        isUnique = true;
-      }
-    }
-    
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Insert new user
     const result = await c.env.DB.prepare(
-      'INSERT INTO users (user_id, email, password) VALUES (?, ?, ?)'
-    ).bind(userId!, hashedPassword, email).run();
+      'INSERT INTO users (email, password) VALUES (?, ?)'
+    ).bind(email, hashedPassword).run();
     
-    // Get the created user
+    // Get the new user's ID
     const newUser = await c.env.DB.prepare(
-      'SELECT id, user_id, email, created_at FROM users WHERE id = ?'
-    ).bind(result.meta.last_row_id).first();
+      'SELECT id, email FROM users WHERE email = ?'
+    ).bind(email).first();
     
     return c.json({ 
       success: true, 
@@ -982,18 +838,13 @@ app.post('/login', async (c) => {
       return c.json({ success: false, message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' });
     }
     
-    // Return user data without password
-    const userData = {
-      id: user.id,
-      user_id: user.user_id,
-      email: user.email,
-      created_at: user.created_at
-    };
-    
     return c.json({ 
       success: true, 
       message: 'تم تسجيل الدخول بنجاح',
-      user: userData
+      user: {
+        id: user.id,
+        email: user.email
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -1001,71 +852,63 @@ app.post('/login', async (c) => {
   }
 });
 
-app.get('/search-users', async (c) => {
+app.get('/user/:id', async (c) => {
   try {
-    const query = c.req.query('q');
-    const currentUserId = c.req.header('X-User-ID');
-    
-    if (!query || !currentUserId) {
-      return c.json({ success: false, message: 'معطى البحث مطلوب' });
-    }
+    const userId = c.req.param('id');
     
     // Initialize DB
     await initDB(c.env.DB);
     
-    // Search users by user_id or email
-    const users = await c.env.DB.prepare(
-      `SELECT id, user_id, email FROM users 
-       WHERE (user_id LIKE ? OR email LIKE ?) AND id != ?
-       LIMIT 10`
-    ).bind(`%${query}%`, `%${query}%`, currentUserId).all();
+    const user = await c.env.DB.prepare(
+      'SELECT id, email FROM users WHERE id = ?'
+    ).bind(userId).first();
     
-    return c.json({ 
-      success: true, 
-      users: users.results 
-    });
+    if (!user) {
+      return c.json({ success: false, message: 'المستخدم غير موجود' });
+    }
+    
+    return c.json({ success: true, user });
   } catch (error) {
-    console.error('Search users error:', error);
-    return c.json({ success: false, message: 'حدث خطأ في البحث' });
+    console.error('Get user error:', error);
+    return c.json({ success: false, message: 'حدث خطأ في جلب بيانات المستخدم' });
   }
 });
 
 app.get('/conversations', async (c) => {
   try {
-    const currentUserId = c.req.header('X-User-ID');
+    const userId = c.req.query('userId');
     
-    if (!currentUserId) {
-      return c.json({ success: false, message: 'معرف المستخدم مطلوب' });
+    if (!userId) {
+      return c.json({ success: false, message: 'User ID is required' });
     }
     
     // Initialize DB
     await initDB(c.env.DB);
     
-    // Get conversations with last message
-    const conversations = await c.env.DB.prepare(
-      `SELECT DISTINCT
+    // Get all unique conversations for the user
+    const conversations = await c.env.DB.prepare(`
+      SELECT DISTINCT 
         CASE 
-          WHEN m.sender_id = ? THEN m.receiver_id 
+          WHEN m.sender_id = ? THEN m.recipient_id 
           ELSE m.sender_id 
         END as other_user_id,
-        u.email as other_user_email,
-        u.user_id as other_user_uid,
-        MAX(m.created_at) as last_message_time
-       FROM messages m
-       JOIN users u ON u.id = (
-         CASE 
-           WHEN m.sender_id = ? THEN m.receiver_id 
-           ELSE m.sender_id 
-         END
-       )
-       WHERE m.sender_id = ? OR m.receiver_id = ?
-       GROUP BY other_user_id, other_user_email, other_user_uid
-       ORDER BY last_message_time DESC`
-    ).bind(currentUserId, currentUserId, currentUserId, currentUserId).all();
+        u.email as other_user_email
+      FROM messages m
+      JOIN users u ON u.id = CASE 
+       // تكملة index.ts من السطر الأخير
+        WHEN m.sender_id = ? THEN m.recipient_id 
+        ELSE m.sender_id 
+      END
+      WHERE m.sender_id = ? OR m.recipient_id = ?
+      ORDER BY u.email
+    `).bind(userId, userId, userId, userId, userId).all();
     
     return c.json({ 
       success: true, 
-      conversations: conversations.results 
+      conversations: conversations.results.map(conv => ({
+        otherUserId: conv.other_user_id,
+        otherUserEmail: conv.other_user_email
+      }))
     });
   } catch (error) {
     console.error('Get conversations error:', error);
@@ -1075,26 +918,23 @@ app.get('/conversations', async (c) => {
 
 app.get('/messages', async (c) => {
   try {
-    const currentUserId = c.req.header('X-User-ID');
-    const otherUserId = c.req.query('other_user_id');
+    const senderId = c.req.query('senderId');
+    const recipientId = c.req.query('recipientId');
     
-    if (!currentUserId || !otherUserId) {
-      return c.json({ success: false, message: 'معرف المستخدم مطلوب' });
+    if (!senderId || !recipientId) {
+      return c.json({ success: false, message: 'Sender and recipient IDs are required' });
     }
     
     // Initialize DB
     await initDB(c.env.DB);
     
     // Get messages between two users
-    const messages = await c.env.DB.prepare(
-      `SELECT m.*, u1.email as sender_email, u2.email as receiver_email
-       FROM messages m
-       JOIN users u1 ON u1.id = m.sender_id
-       JOIN users u2 ON u2.id = m.receiver_id
-       WHERE (m.sender_id = ? AND m.receiver_id = ?) 
-          OR (m.sender_id = ? AND m.receiver_id = ?)
-       ORDER BY m.created_at ASC`
-    ).bind(currentUserId, otherUserId, otherUserId, currentUserId).all();
+    const messages = await c.env.DB.prepare(`
+      SELECT * FROM messages 
+      WHERE (sender_id = ? AND recipient_id = ?) 
+         OR (sender_id = ? AND recipient_id = ?)
+      ORDER BY created_at ASC
+    `).bind(senderId, recipientId, recipientId, senderId).all();
     
     return c.json({ 
       success: true, 
@@ -1108,38 +948,31 @@ app.get('/messages', async (c) => {
 
 app.post('/send-message', async (c) => {
   try {
-    const { receiver_id, content } = await c.req.json();
-    const sender_id = c.req.header('X-User-ID');
+    const { senderId, recipientId, content } = await c.req.json();
     
-    if (!sender_id || !receiver_id || !content) {
-      return c.json({ success: false, message: 'جميع البيانات مطلوبة' });
-    }
-    
-    if (content.trim().length === 0) {
-      return c.json({ success: false, message: 'محتوى الرسالة لا يمكن أن يكون فارغاً' });
+    // Validate input
+    if (!senderId || !recipientId || !content) {
+      return c.json({ success: false, message: 'جميع الحقول مطلوبة' });
     }
     
     // Initialize DB
     await initDB(c.env.DB);
     
-    // Check if receiver exists
-    const receiver = await c.env.DB.prepare(
+    // Check if recipient exists
+    const recipient = await c.env.DB.prepare(
       'SELECT id FROM users WHERE id = ?'
-    ).bind(receiver_id).first();
+    ).bind(recipientId).first();
     
-    if (!receiver) {
-      return c.json({ success: false, message: 'المستخدم المطلوب إرسال الرسالة إليه غير موجود' });
+    if (!recipient) {
+      return c.json({ success: false, message: 'المستخدم المستقبل غير موجود' });
     }
     
     // Insert message
     await c.env.DB.prepare(
-      'INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)'
-    ).bind(sender_id, receiver_id, content.trim()).run();
+      'INSERT INTO messages (sender_id, recipient_id, content) VALUES (?, ?, ?)'
+    ).bind(senderId, recipientId, content).run();
     
-    return c.json({ 
-      success: true, 
-      message: 'تم إرسال الرسالة بنجاح' 
-    });
+    return c.json({ success: true, message: 'تم إرسال الرسالة بنجاح' });
   } catch (error) {
     console.error('Send message error:', error);
     return c.json({ success: false, message: 'حدث خطأ في إرسال الرسالة' });
@@ -1153,7 +986,7 @@ app.get('/users', async (c) => {
     
     // Get all users (excluding passwords)
     const users = await c.env.DB.prepare(
-      'SELECT id, user_id, email, created_at FROM users ORDER BY created_at DESC'
+      'SELECT id, email, created_at FROM users'
     ).all();
     
     return c.json({ success: true, users: users.results });
